@@ -112,11 +112,15 @@ void _reader::run_all(){
                     vector<string> pipe_tokens;
                     pipe_tokens.push_back(first_cmd);
                     _reader_Tokens.pop();
-                    while((!_reader_Tokens_Nums.empty()) || (_reader_Tokens_Nums.top() == 4)){
-                        _reader_Tokens_Nums.pop();
-                        first_cmd = _reader_Tokens.top();
-                        pipe_tokens.push_back(first_cmd);
-                        _reader_Tokens.pop();
+                    while(_reader_Tokens_Nums.size() > 0){
+                        if(_reader_Tokens_Nums.top() == 4){
+                            _reader_Tokens_Nums.pop();
+                            first_cmd = _reader_Tokens.top();
+                            pipe_tokens.push_back(first_cmd);
+                            _reader_Tokens.pop();
+                        }else{
+                            break;
+                        }
                     }
                     CMD* pipe_cmd = new CMD(pipe_tokens);
                     pipe_cmd->run_pipe_output();
