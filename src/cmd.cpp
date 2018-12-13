@@ -264,7 +264,7 @@ void CMD::run_pipe_output(){
 
         for(vector<string>::iterator itz = cmd_2->arguments.begin(); itz != cmd_2->arguments.end(); itz++){
             string temp_strs = *itz;
-            //cout << "Argument 2 cmd: " << temp_strs << endl;
+            cout << "Argument 2 cmd: " << temp_strs << endl;
             new_args1[random_index] = (char*)temp_strs.c_str();
             random_index++;
         }
@@ -357,6 +357,8 @@ void CMD::run_pipe_output(){
 
                 //Executing which will be printed out to pipe write end.
                 execvp(new_array[0],new_array);
+                _passed = 0;
+                perror("exec");
 
             }else if(cmd_1->append_status){
                 string file_str = cmd_1->arguments.back();
@@ -529,14 +531,18 @@ void CMD::run_pipe_output(){
                 perror("exec");
             }else{
 
+                int dupin = dup(0);
                 //Closing the std in
                 close(0);
                 //Replacing stdin fd with READING pipe
                 dup(_p[0]);
                 //Make writing file available
-                //cout << "I was here " << endl;
+                cout << "I was here " << endl;
                 //Close the writing reference
+
                 close(_p[1]);
+                close(_p[0]);
+                dup(dupin);
 
                 //Executing it into stdout of the input of stdin
                 execvp(new_args1[0],new_args1);
@@ -546,7 +552,7 @@ void CMD::run_pipe_output(){
             }
             int returnStatus;
             waitpid(pid,&returnStatus,0);
-            close(_p[0]);
+            //close(_p[0]);
             //close(_p[1]);
 
         }
