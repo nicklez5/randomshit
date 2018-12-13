@@ -338,30 +338,24 @@ void CMD::run_pipe_output(){
                 //cout << "File name: " << destPtr << endl;
                 //Check if the file has been opened successfully
                 int file_handle = open(destPtr,O_RDONLY);
+
                 if(file_handle < 0){
                     perror("File not found");
                     exit(0);
                 }
 
                 //Close the stdin
-		int dup_out = dup(1);
-		close(1);
-		dup(_p[1]);
-		close(_p[0]);
-			
-                //close(0);
-                //dup(file_handle);
+                close(0);
+                dup(file_handle);
+                close(1);
+                dup(_p[1]);
+                close(_p[0]);
 
-                //close(1);
-                //dup(_p[0]);
-                //close(_p[1]);
-                //close(_p[0]);
-                //dup(dup_out);
 
 
                 //Replace the stdout with the pipe write
 
-                char* new_array[cmd_1->arguments.size()];
+                char* new_array[cmd_1->arguments.size()-1];
                 int random_index = 0;
                 while(1){
                     string char_output = "<";
@@ -374,8 +368,7 @@ void CMD::run_pipe_output(){
                         break;
                     }
                 }
-		new_array[cmd_1->arguments.size()-2] = (char*)destPtr;
-                new_array[cmd_1->arguments.size()-1] = NULL;
+                new_array[cmd_1->arguments.size()-2] = NULL;
 
                 //Close the pipe read end
 
@@ -553,12 +546,9 @@ void CMD::run_pipe_output(){
 
                 //Closing the std in
                 close(0);
-
                 //Replacing stdin fd with READING pipe
                 dup(_p[0]);
-
                 //Make writing file available
-
                 //cout << "I was here " << endl;
                 //Close the writing reference
                 close(_p[1]);
@@ -572,7 +562,7 @@ void CMD::run_pipe_output(){
             int returnStatus;
             waitpid(pid,&returnStatus,0);
             close(_p[0]);
-            close(_p[1]);
+            //close(_p[1]);
 
         }
 
