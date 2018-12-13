@@ -253,7 +253,7 @@ void CMD::run_pipe_output(){
         //Command 1
         for(vector<string>::iterator its = cmd_1->arguments.begin(); its != cmd_1->arguments.end(); its++){
             string temp_str = *its;
-            //cout << "Argument 1 cmd: " << temp_str << endl;
+            cout << "Argument 1 cmd: " << temp_str << endl;
             new_args[random_index] = (char*)temp_str.c_str();
             random_index++;
         }
@@ -316,6 +316,7 @@ void CMD::run_pipe_output(){
             }else if(cmd_1->input_status){
 
                 string file_str = cmd_1->arguments.back();
+		//cout << file_str << endl;
                 const char* destPtr = file_str.c_str();
 
                 //Check if the file has been opened successfully
@@ -332,14 +333,15 @@ void CMD::run_pipe_output(){
                 close(1);
                 dup(_p[1]);
                 close(_p[0]);
-		close(_p[1]);
+		
 
 
                 //Replace the stdout with the pipe write
 
                 char* new_array[cmd_1->arguments.size()-1];
                 int random_index = 0;
-                while(1){
+		bool has_not_been_found = true;
+                while(has_not_been_found){
                     string char_output = "<";
                     if(strcmp(cmd_1->arguments.at(random_index).c_str(),char_output.c_str()) != 0){
                         string str = cmd_1->arguments.at(random_index);
@@ -347,7 +349,7 @@ void CMD::run_pipe_output(){
                         new_array[random_index] = chr;
                         random_index++;
                     }else{
-                        break;
+                        has_not_been_found = false;
                     }
                 }
                 new_array[cmd_1->arguments.size()-2] = NULL;
