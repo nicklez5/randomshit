@@ -230,7 +230,7 @@ void CMD::run_pipe_output(){
         vec_list_arg.push_back(List_arg);
     }
     _passed = 1;
-    pid_t pid = fork();
+    
 
     //Pipe
     int _p[2];
@@ -269,7 +269,7 @@ void CMD::run_pipe_output(){
             random_index++;
         }
         new_args1[cmd_2->arguments.size()] = NULL;
-
+	pid_t pid = fork();
         //Child process
         if(pid == 0){
 
@@ -332,7 +332,7 @@ void CMD::run_pipe_output(){
                 close(1);
                 dup(_p[1]);
                 close(_p[0]);
-
+		close(_p[1]);
 
 
                 //Replace the stdout with the pipe write
