@@ -344,20 +344,24 @@ void CMD::run_pipe_output(){
                 }
 
                 //Close the stdin
-                close(0);
-                int dup_out = dup(1);
-                dup(file_handle);
+		int dup_out = dup(1);
+		close(1);
+		dup(_p[1]);
+		close(_p[0]);
+			
+                //close(0);
+                //dup(file_handle);
 
-                close(1);
-                dup(_p[0]);
-                close(_p[1]);
-                close(_p[0]);
-                dup(dup_out);
+                //close(1);
+                //dup(_p[0]);
+                //close(_p[1]);
+                //close(_p[0]);
+                //dup(dup_out);
 
 
                 //Replace the stdout with the pipe write
 
-                char* new_array[cmd_1->arguments.size()-1];
+                char* new_array[cmd_1->arguments.size()];
                 int random_index = 0;
                 while(1){
                     string char_output = "<";
@@ -370,7 +374,8 @@ void CMD::run_pipe_output(){
                         break;
                     }
                 }
-                new_array[cmd_1->arguments.size()-2] = NULL;
+		new_array[cmd_1->arguments.size()-2] = (char*)destPtr;
+                new_array[cmd_1->arguments.size()-1] = NULL;
 
                 //Close the pipe read end
 
@@ -550,13 +555,13 @@ void CMD::run_pipe_output(){
                 close(0);
 
                 //Replacing stdin fd with READING pipe
-                dup(_p[1]);
+                dup(_p[0]);
 
                 //Make writing file available
 
                 //cout << "I was here " << endl;
                 //Close the writing reference
-                close(_p[0]);
+                close(_p[1]);
 
                 //Executing it into stdout of the input of stdin
                 execvp(new_args1[0],new_args1);
