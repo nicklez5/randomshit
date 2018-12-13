@@ -538,8 +538,8 @@ void CMD::run_pipe_output(){
                 close(0);
                 //Replacing stdin fd with READING pipe
                 dup(_p[0]);
+
                 //Make writing file available
-                cout << "I was here " << endl;
                 //Close the writing reference
 
                 close(_p[1]);
@@ -548,6 +548,7 @@ void CMD::run_pipe_output(){
 
                 //Executing it into stdout of the input of stdin
                 execvp(new_args1[0],new_args1);
+		//cout << "I was here " << endl;
                 _passed = 0;
                 perror("exec");
 
