@@ -250,7 +250,7 @@ void CMD::run_pipe_output(){
         vec_list_arg.push_back(List_arg);
     }
     _passed = 1;
-    pid_t pid = 0;
+    pid_t pid = fork();
 
     //Pipe
     int _p[2];
@@ -291,7 +291,7 @@ void CMD::run_pipe_output(){
         new_args1[cmd_2->arguments.size()] = NULL;
 
         //Child process
-        if(fork() == 0){
+        if(pid == 0){
 
             //Redirecting stdout to a file
             //cat > main.cpp
@@ -351,8 +351,8 @@ void CMD::run_pipe_output(){
                 close(1);
                 dup(_p[0]);
                 close(_p[1]);
-		close(_p[0]);
-		dup(dup_out);
+                close(_p[0]);
+                dup(dup_out);
 
 
                 //Replace the stdout with the pipe write
@@ -371,7 +371,7 @@ void CMD::run_pipe_output(){
                     }
                 }
                 new_array[cmd_1->arguments.size()-2] = NULL;
-              
+
                 //Close the pipe read end
 
 
@@ -405,7 +405,7 @@ void CMD::run_pipe_output(){
                     }
                 }
                 new_array[cmd_1->arguments.size()-2] = NULL;
-                
+
 
                 execvp(new_array[0],new_array);
                 _passed = 0;
@@ -432,7 +432,7 @@ void CMD::run_pipe_output(){
         }
 
         //Parent process
-        if(fork() == 0){
+        else{
 
             //Case > - Redirecting stdout to file name
             if(cmd_2->output_status){
@@ -450,7 +450,7 @@ void CMD::run_pipe_output(){
                 close(0);
                 dup(_p[0]);
                 close(_p[1]);
-	
+
                 char* new_array[cmd_2->arguments.size()-1];
                 int random_index = 0;
                 while(1){
@@ -551,25 +551,24 @@ void CMD::run_pipe_output(){
 
                 //Replacing stdin fd with READING pipe
                 dup(_p[1]);
-		
+
                 //Make writing file available
 
                 //cout << "I was here " << endl;
                 //Close the writing reference
                 close(_p[0]);
-		
+
                 //Executing it into stdout of the input of stdin
                 execvp(new_args1[0],new_args1);
                 _passed = 0;
                 perror("exec");
 
             }
-            //int returnStatus;
-            //waitpid(pid,&returnStatus,0);
+            int returnStatus;
+            waitpid(pid,&returnStatus,0);
             close(_p[0]);
             close(_p[1]);
-            wait(0);
-            wait(0);
+
         }
 
     }
