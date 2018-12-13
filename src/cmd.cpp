@@ -277,7 +277,8 @@ void CMD::run_pipe_output(){
             //cat > main.cpp
             if(cmd_1->output_status){
 
-                const char* destPtr = (const char*)new_args[cmd_1->arguments.size() -1];
+                string file_str = cmd_1->arguments.back();
+                const char* destPtr = file_str.c_str();
                 int file_handle = open(destPtr,O_WRONLY,O_CREAT);
 
                 if(file_handle < 0){
@@ -314,8 +315,9 @@ void CMD::run_pipe_output(){
                 //cat < ExistingFile ; READING
             }else if(cmd_1->input_status){
 
-                const char* destPtr = (const char*)new_args[cmd_1->arguments.size()-1];
-                //cout << "File name: " << destPtr << endl;
+                string file_str = cmd_1->arguments.back();
+                const char* destPtr = file_str.c_str();
+
                 //Check if the file has been opened successfully
                 int file_handle = open(destPtr,O_RDONLY);
 
@@ -357,7 +359,8 @@ void CMD::run_pipe_output(){
                 execvp(new_array[0],new_array);
 
             }else if(cmd_1->append_status){
-                const char* destPtr = (const char*)new_args[cmd_1->arguments.size()-1];
+                string file_str = cmd_1->arguments.back();
+                const char* destPtr = file_str.c_str();
                 int file_handle = open(destPtr,O_WRONLY,O_APPEND,O_CREAT);
                 if(file_handle < 0){
                     perror("File not found");
@@ -414,8 +417,8 @@ void CMD::run_pipe_output(){
 
             //Case > - Redirecting stdout to file name
             if(cmd_2->output_status){
-
-                const char* destPtr2 = (const char*)new_args1[cmd_2->arguments.size()-1];
+                string file_str = cmd_2->arguments.back();
+                const char* destPtr2 = file_str.c_str();
                 int file_handle = open(destPtr2,O_WRONLY,O_CREAT);
 
                 if(file_handle < 0 ){
@@ -452,7 +455,8 @@ void CMD::run_pipe_output(){
                 //Accepting input from a file
             }else if(cmd_2->input_status){
 
-                const char* destPtr2 = (const char*)new_args1[cmd_2->arguments.size()-1];
+                string file_str = cmd_2->arguments.back();
+                const char* destPtr2 = file_str.c_str();
                 int file_handle = open(destPtr2,O_RDONLY);
 
                 if(file_handle < 0 ){
@@ -491,7 +495,8 @@ void CMD::run_pipe_output(){
 
                 //Redirecting the Stdout to a file and appends on the file as well
             }else if(cmd_2->append_status){
-                const char* destPtr2 = (const char*)new_args1[cmd_2->arguments.size()-1];
+                string file_str = cmd_2->arguments.back();
+                const char* destPtr2 = file_str.c_str();
                 int file_handle = open(destPtr2,O_WRONLY,O_APPEND,O_CREAT);
 
                 if(file_handle < 0){
@@ -676,8 +681,10 @@ void CMD::run_output(){
             else if(input_direct){
 
                 //Open the file
-                const char* destPtr = (const char*)_args[temp_container.size()-1];
-                cout << "File name: " << _args[temp_container.size()-1] << endl;
+                string file_str = temp_container.back();
+                const char* destPtr = file_str.c_str();
+                //cout << "File name: " << _args[temp_container.size()-1] << endl;
+
                 //Get the file descriptor
                 int file_handle = open(destPtr,O_RDONLY);
 
@@ -722,7 +729,8 @@ void CMD::run_output(){
             }else if(append_direct){
 
                 //Get the destination pointer
-                const char* destPtr = (const char*)_args[temp_container.size()-1];
+                string file_str = temp_container.back();
+                const char* destPtr = file_str.c_str();
 
                 //open the handle
                 int file_handle = open(destPtr,O_APPEND,O_WRONLY,O_CREAT);
