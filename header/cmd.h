@@ -6,7 +6,12 @@
 #include <vector>
 
 using namespace std;
-
+struct token_arrays{
+	vector<string> arguments;
+	bool output_status;
+	bool input_status;
+	bool append_status;
+};
 class CMD : public Connector{
 protected:
 

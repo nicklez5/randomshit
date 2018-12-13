@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <sstream>
 #include <fcntl.h>
-#include "../header/token_arrays.h"
+//#include "../header/token_arrays.h"
 using namespace std;
 
 //Constructor
@@ -345,18 +345,19 @@ void CMD::run_pipe_output(){
 
                 //Close the stdin
                 close(0);
-                //int dup_out = dup(1);
+                int dup_out = dup(1);
                 dup(file_handle);
 
                 close(1);
                 dup(_p[0]);
                 close(_p[1]);
-
+		close(_p[0]);
+		dup(dup_out);
 
 
                 //Replace the stdout with the pipe write
 
-                char* new_array[cmd_1->arguments.size()];
+                char* new_array[cmd_1->arguments.size()-1];
                 int random_index = 0;
                 while(1){
                     string char_output = "<";
@@ -369,8 +370,8 @@ void CMD::run_pipe_output(){
                         break;
                     }
                 }
-                new_array[cmd_1->arguments.size()-2] = (char*)destPtr;
-                new_array[cmd_1->arguments.size()-1] = NULL;
+                new_array[cmd_1->arguments.size()-2] = NULL;
+              
                 //Close the pipe read end
 
 
@@ -390,7 +391,7 @@ void CMD::run_pipe_output(){
                 dup(_p[0]);
                 close(_p[1]);
 
-                char* new_array[cmd_1->arguments.size()];
+                char* new_array[cmd_1->arguments.size()-1];
                 int random_index = 0;
                 while(1){
                     string char_output = "<<";
@@ -403,8 +404,8 @@ void CMD::run_pipe_output(){
                         break;
                     }
                 }
-                new_array[cmd_1->arguments.size()-2] = (char*)destPtr;
-                new_array[cmd_1->arguments.size()-1] = NULL;
+                new_array[cmd_1->arguments.size()-2] = NULL;
+                
 
                 execvp(new_array[0],new_array);
                 _passed = 0;
@@ -449,7 +450,7 @@ void CMD::run_pipe_output(){
                 close(0);
                 dup(_p[0]);
                 close(_p[1]);
-
+	
                 char* new_array[cmd_2->arguments.size()-1];
                 int random_index = 0;
                 while(1){
@@ -550,13 +551,13 @@ void CMD::run_pipe_output(){
 
                 //Replacing stdin fd with READING pipe
                 dup(_p[1]);
-
+		
                 //Make writing file available
 
                 //cout << "I was here " << endl;
                 //Close the writing reference
                 close(_p[0]);
-
+		
                 //Executing it into stdout of the input of stdin
                 execvp(new_args1[0],new_args1);
                 _passed = 0;
