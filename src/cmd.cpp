@@ -202,10 +202,6 @@ void CMD::run_pipe_output(){
     vector<token_arrays*> vec_list_arg;
     for(vector<string>::iterator itz = pipe_tokens.begin(); itz != pipe_tokens.end(); itz++){
         token_arrays* List_arg = new token_arrays();
-        bool output_direct = false;
-        bool input_direct = false;
-        bool append_direct = false;
-
         vector<string> temp_container;
         string random_str = *itz;
         char *xyz = strdup(random_str.c_str());
@@ -223,30 +219,14 @@ void CMD::run_pipe_output(){
         for(vector<string>::iterator it = temp_container.begin(); it != temp_container.end(); it++){
             string kfc = *it;
             if(found_append_direct(kfc)){
-                append_direct = true;
+                List_arg->append_status = true;
             }else if(found_input_direct(kfc)){
-                input_direct = true;
+                List_arg->input_status = true;
             }else if(found_output_direct(kfc)){
-                output_direct = true;
+                List_arg->output_status = true;
             }
-            _args[word_count] = (char*)kfc.c_str();
-            word_count++;
-
         }
-        _args[temp_container.size()] = NULL;
-        //List arg is a vector that holds strings:
-        //Current vector: "ls" "-l"
-        for(int i = 0 ; i < word_count ; i++){
-            string cStr(_args[i]);
-            List_arg->arguments.push_back(cStr);
-        }
-        if(input_direct){
-            List_arg->input_status = true;
-        }else if(output_direct){
-            List_arg->output_status = true;
-        }else if(append_direct){
-            List_arg->append_status = true;
-        }
+        List_arg->arguments = temp_container;
         vec_list_arg.push_back(List_arg);
     }
     _passed = 1;
