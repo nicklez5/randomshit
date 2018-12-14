@@ -15,8 +15,8 @@ int main(int argc,char* argv[])
 {
 	//testing_tokenizer();
 	//test_cmd();
-	//test_process();
-	test_pipe();
+	test_process();
+	//test_pipe();
 	return 0;
 	
 }
