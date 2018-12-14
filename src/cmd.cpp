@@ -271,7 +271,7 @@ void CMD::run_pipe_output(){
         new_args1[cmd_2->arguments.size()] = NULL;
 	pid_t pid = fork();
         //Child process
-        if(pid == 0){
+        if(pid != 0){
 
             //Redirecting stdout to a file
             //cat > main.cpp
@@ -318,7 +318,7 @@ void CMD::run_pipe_output(){
                 string file_str = cmd_1->arguments.back();
 		//cout << file_str << endl;
                 const char* destPtr = file_str.c_str();
-
+		cout << "Child Went first" << endl;
                 //Check if the file has been opened successfully
                 int file_handle = open(destPtr,O_RDONLY);
 
@@ -333,6 +333,7 @@ void CMD::run_pipe_output(){
                 close(1);
                 dup(_p[1]);
                 close(_p[0]);
+		//dup(dupout))
 		
 
 
@@ -532,7 +533,8 @@ void CMD::run_pipe_output(){
                 _passed = 0;
                 perror("exec");
             }else{
-
+		
+		//cout << "Parent goes first" << endl;
                 int dupin = dup(0);
                 //Closing the std in
                 close(0);
@@ -543,8 +545,8 @@ void CMD::run_pipe_output(){
                 //Close the writing reference
 
                 close(_p[1]);
-                close(_p[0]);
-                dup(dupin);
+            	//close(_p[0]);
+                //dup(dupin);
 
                 //Executing it into stdout of the input of stdin
                 execvp(new_args1[0],new_args1);
