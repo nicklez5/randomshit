@@ -575,7 +575,8 @@ void CMD::run_pipe_output(){
 }
 //Need to implement redirect and indirect
 void CMD::run_output(){
-
+    fflush(stdin);
+    cout.flush();
     //Get the current string and seperate it with delimiters of whitespaces, insert into vector
     vector<string> temp_container;
     bool append_direct = false;
@@ -608,14 +609,15 @@ void CMD::run_output(){
         free(xyz);
         return;
     }
-
+    
     //Emptying out the white spaces in the string and placing the tokens into a char array
-    char* _args[temp_container.size() + 1];
+    char *_args[temp_container.size() + 1];
     int word_count = 0;
 
     //Set the string as a char*
     for(vector<string>::iterator it = temp_container.begin(); it != temp_container.end(); it++){
         string kfc = *it;
+	cout << "Vector String: " << kfc << endl;
         if(found_append_direct(kfc)){
             append_direct = true;
         }else if(found_output_direct(kfc)){
@@ -623,17 +625,15 @@ void CMD::run_output(){
         }else if(found_input_direct(kfc)){
             input_direct = true;
         }
-        _args[word_count] = (char*)kfc.c_str();
-        word_count++;
-
+	_args[word_count] = (char*)kfc.c_str();
+        word_count+=1;
     }
     _passed = 1;
-
     //Executing the command found in args
     _args[temp_container.size()] = NULL;
-
-    int _pipe[2];
-    pipe(_pipe);
+    cout << temp_container.size() << endl;
+    //int _pipe[2];
+    //pipe(_pipe);
     pid_t pid = fork();
     string exit_str = string(_args[0]);
     //Child
@@ -777,14 +777,18 @@ void CMD::run_output(){
                 perror("exec");
 
             }else{
+		//cout << "I was here " << endl
+		printf("%s\n",_args[0]);
+		printf("%s\n",_args[1]);
+		//printf("%s\n",_args[2]);
                 execvp(_args[0],_args);
                 _passed = 0;
                 perror("exec");
             }
-        }}else{
-
-        int returnStatus;
-        waitpid(pid,&returnStatus,0);
+        }
+    	}else{
+       	 	int returnStatus;
+        	waitpid(pid,&returnStatus,0);
 
     }
 

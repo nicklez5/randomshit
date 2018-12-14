@@ -40,8 +40,9 @@ void test_pipe(){
 
 }
 void test_process_cmd(){
-    Process start_new;
-    start_new.insert_me("echo hello");
+    string bled99 = "echo hello";
+    Process start_newk;
+    start_newk.insert_me(bled99);
 }
 //Test the Process
 void test_process(){
