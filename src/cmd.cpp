@@ -269,10 +269,10 @@ void CMD::run_pipe_output(){
             random_index++;
         }
         new_args1[cmd_2->arguments.size()] = NULL;
-	pid_t pid = fork();
-        //Child process
-        if(pid != 0){
-
+	//pid_t pid = fork();
+        //Parent process
+        if(fork() == 0){
+ 
             //Redirecting stdout to a file
             //cat > main.cpp
             if(cmd_1->output_status){
@@ -311,14 +311,14 @@ void CMD::run_pipe_output(){
                 execvp(new_array[0],new_array);
                 _passed = 0;
                 perror("exec");
-
+		exit(1);
                 //cat < ExistingFile ; READING
             }else if(cmd_1->input_status){
 
                 string file_str = cmd_1->arguments.back();
 		//cout << file_str << endl;
                 const char* destPtr = file_str.c_str();
-		cout << "Child Went first" << endl;
+		cout << "Child goes first" << endl;
                 //Check if the file has been opened successfully
                 int file_handle = open(destPtr,O_RDONLY);
 
@@ -333,6 +333,7 @@ void CMD::run_pipe_output(){
                 close(1);
                 dup(_p[1]);
                 close(_p[0]);
+		close(_p[1]);
 		//dup(dupout))
 		
 
@@ -346,7 +347,7 @@ void CMD::run_pipe_output(){
                     string char_output = "<";
                     if(strcmp(cmd_1->arguments.at(random_index).c_str(),char_output.c_str()) != 0){
                         string str = cmd_1->arguments.at(random_index);
-                        char* chr = const_cast<char*>(str.c_str());
+                        char* chr = &str[0u];
                         new_array[random_index] = chr;
                         random_index++;
                     }else{
@@ -362,6 +363,7 @@ void CMD::run_pipe_output(){
                 execvp(new_array[0],new_array);
                 _passed = 0;
                 perror("exec");
+		exit(1);
 
             }else if(cmd_1->append_status){
                 string file_str = cmd_1->arguments.back();
@@ -396,7 +398,7 @@ void CMD::run_pipe_output(){
                 execvp(new_array[0],new_array);
                 _passed = 0;
                 perror("exec");
-
+		exit(1);
             }else{
                 //Close the std out
                 close(1);
@@ -411,14 +413,14 @@ void CMD::run_pipe_output(){
                 execvp(new_args[0],new_args);
                 _passed = 0;
                 perror("error executing");
-
+		exit(1);
             }
 
 
         }
 
         //Parent process
-        else{
+        if(fork() == 0){
 
             //Case > - Redirecting stdout to file name
             if(cmd_2->output_status){
@@ -455,7 +457,7 @@ void CMD::run_pipe_output(){
                 execvp(new_array[0],new_array);
                 _passed = 0;
                 perror("exec");
-
+		exit(1);
                 //Case <
                 //Accepting input from a file
             }else if(cmd_2->input_status){
@@ -497,7 +499,7 @@ void CMD::run_pipe_output(){
                 execvp(new_array[0],new_array);
                 _passed = 0;
                 perror("exec");
-
+		exit(1);
                 //Redirecting the Stdout to a file and appends on the file as well
             }else if(cmd_2->append_status){
                 string file_str = cmd_2->arguments.back();
@@ -532,9 +534,10 @@ void CMD::run_pipe_output(){
                 execvp(new_array[0],new_array);
                 _passed = 0;
                 perror("exec");
+		exit(1);
             }else{
 		
-		//cout << "Parent goes first" << endl;
+		cout << "Parent goes first" << endl;
                 int dupin = dup(0);
                 //Closing the std in
                 close(0);
@@ -545,21 +548,22 @@ void CMD::run_pipe_output(){
                 //Close the writing reference
 
                 close(_p[1]);
+		close(_p[0]);
             	//close(_p[0]);
                 //dup(dupin);
 
                 //Executing it into stdout of the input of stdin
                 execvp(new_args1[0],new_args1);
-		//cout << "I was here " << endl;
                 _passed = 0;
-                perror("exec");
-
+                perror("second command failed");
+		exit(1);
             }
-            int returnStatus;
-            waitpid(pid,&returnStatus,0);
-            //close(_p[0]);
-            //close(_p[1]);
-
+            //int returnStatus;
+            //waitpid(pid,&returnStatus,0);
+            close(_p[0]);
+            close(_p[1]);
+	    wait(0);
+	    wait(0);
         }
 
     }
